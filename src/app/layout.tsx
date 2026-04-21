@@ -3,7 +3,6 @@ import { League_Spartan } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import Navbar from "@/components/common/navbar";
-import EmptyState from "@/components/empty-state";
 
 const leagueSpartan = League_Spartan({
   variable: "--font-league-spartan",
@@ -23,22 +22,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={leagueSpartan.variable}>
-      <Navbar />
       <body
         suppressHydrationWarning
-        className={cn(
-          "min-h-screen",
-          "flex",
-          "flex-col",
-          "font-league-spartan",
-        )}
+        className={cn("min-h-screen", "font-league-spartan", "bg-background")}
       >
-        {/* {children} */}
+        <Navbar />
 
-        <EmptyState
-          text="No invoices to display"
-          description="You don't have any invoices yet."
-        />
+        {children}
       </body>
     </html>
   );

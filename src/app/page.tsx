@@ -1,3 +1,9 @@
+import InvoicePage from "./invoices/page";
+
 export default function Home() {
-  return <main>Hello, Next.js!</main>;
+  return (
+    <main>
+      <InvoicePage />
+    </main>
+  );
 }
