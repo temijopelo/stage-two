@@ -9,6 +9,7 @@ export interface InvoiceCardProps {
   amount: number;
   dueDate: string;
   status: "paid" | "pending" | "draft";
+  routerId: () => void;
 }
 
 export interface Invoice {

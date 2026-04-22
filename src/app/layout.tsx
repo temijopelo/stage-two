@@ -20,15 +20,26 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const themeScript = `(() => {
+  try {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const useDark = savedTheme ? savedTheme === 'dark' : prefersDark;
+    document.documentElement.classList.toggle('dark', useDark);
+  } catch (_) {}
+})();`;
+
   return (
-    <html lang="en" className={leagueSpartan.variable}>
+    <html lang="en" suppressHydrationWarning className={leagueSpartan.variable}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body
         suppressHydrationWarning
-        className={cn("min-h-screen", "font-league-spartan", "bg-background")}
+        className={cn("h-screen", "font-league-spartan", "bg-background")}
       >
         <Navbar />
-
-        {children}
+        <main className="pt-18">{children}</main>
       </body>
     </html>
   );
