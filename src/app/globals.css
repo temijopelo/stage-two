@@ -91,7 +91,7 @@
   --button-primary: #7c5dfa;
   --button-primary-foreground: oklch(0.985 0 0);
   --button-secondary: #f9fafe;
-  --button-secondary-foreground: oklch(0.205 0 0);
+  --button-secondary-foreground: #7e88c3;
 }
 
 .dark {
@@ -131,7 +131,7 @@
   --button-primary: #7c5dfa;
   --button-primary-foreground: oklch(0.205 0 0);
   --button-secondary: #252945;
-  --button-secondary-foreground: oklch(0.985 0 0);
+  --button-secondary-foreground: #dfe3fa;
 }
 
 @layer base {

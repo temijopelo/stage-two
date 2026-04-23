@@ -1,16 +1,13 @@
 "use client";
-import { useParams, useRouter } from "next/navigation";
+
+import EditInvoiceForm from "../editInvoiceForm";
 import {
   Drawer,
   DrawerClose,
   DrawerContent,
-  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
 } from "../ui/drawer";
-import { Button } from "../ui/button";
 import {
   Dialog,
   DialogClose,
@@ -19,31 +16,103 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "../ui/dialog";
 import { useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
-import EditInvoiceForm from "../editInvoiceForm";
+import {
+  deleteFullInvoice,
+  deleteInvoice,
+  saveEditedInvoice,
+  updateInvoiceStatus,
+} from "@/lib/invoice-storage";
+import { Invoice, InvoiceFormValues } from "@/types";
+import { useRouter } from "next/navigation";
 
-const FooterBtn = ({ className }: { className?: string }) => {
+type InvoiceActionData = Invoice & {
+  billFrom?: {
+    streetAddress: string;
+    city: string;
+    postCode: string;
+    country: string;
+  };
+  billTo?: {
+    name: string;
+    email: string;
+    streetAddress: string;
+    city: string;
+    postCode: string;
+    country: string;
+  };
+  items?: {
+    name: string;
+    quantity: number;
+    price: number;
+  }[];
+  invoiceDate?: string;
+  paymentTerms?: string;
+  projectDescription?: string;
+};
+
+interface FooterBtnProps {
+  className?: string;
+  invoice: InvoiceActionData;
+  onInvoiceUpdated?: (invoice: InvoiceActionData) => void;
+  onInvoiceDeleted?: () => void;
+}
+
+const FooterBtn = ({
+  className,
+  invoice,
+  onInvoiceUpdated,
+  onInvoiceDeleted,
+}: FooterBtnProps) => {
   const router = useRouter();
-  const param = useParams();
-  const [open, setOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+
+  const canMarkAsPaid = invoice.status === "pending";
+
+  const handleSaveChanges = (values: InvoiceFormValues) => {
+    const updatedInvoice = saveEditedInvoice(invoice.id, values);
+    if (updatedInvoice) {
+      onInvoiceUpdated?.(updatedInvoice);
+    }
+    setEditOpen(false);
+  };
+
+  const handleDelete = () => {
+    deleteInvoice(invoice.id);
+    deleteFullInvoice(invoice.id);
+    setDeleteOpen(false);
+    onInvoiceDeleted?.();
+    router.push("/invoices");
+  };
+
+  const handleMarkAsPaid = () => {
+    if (!canMarkAsPaid) return;
+
+    const updatedInvoice = updateInvoiceStatus(invoice.id, "paid");
+    if (updatedInvoice) {
+      onInvoiceUpdated?.({ ...invoice, status: "paid" });
+    }
+  };
 
   return (
     <div
-      className={`flex justify-evenly bg-card p-4 font-bold text-white ${className}`}
+      className={`flex justify-between gap-3 bg-card p-3 font-bold text-white md:flex-row md:items-center md:justify-end ${className ?? ""}`}
     >
-      <Drawer direction={"left"}>
-        <DrawerTrigger asChild>
-          <button className="px-4 text-[15px] md:px-6 bg-button-secondary hover:opacity-85 text-button-secondary-foreground md:py-4 rounded-full cursor-pointer transition-opacity">
-            Edit
-          </button>
-        </DrawerTrigger>
+      <Drawer open={editOpen} onOpenChange={setEditOpen} direction="left">
+        <button
+          type="button"
+          onClick={() => setEditOpen(true)}
+          className="px-4 text-[15px] md:px-6 bg-button-secondary hover:bg-[#DFE3FA] hover:text-[#7E88C3] text-button-secondary-foreground md:py-4 rounded-full cursor-pointer transition-opacity"
+        >
+          Edit
+        </button>
         <DrawerContent className="data-[vaul-drawer-direction=left]:w-screen">
           <DrawerHeader>
             <DrawerClose asChild>
-              <button className="flex gap-2 items-center my-3 cursor-pointer">
+              <button className="flex gap-2 items-center my-3 cursor-pointer text-foreground">
                 <IoIosArrowBack className="text-button-primary" size={16} />
                 <span className="mt-1 font-bold">Go Back</span>
               </button>
@@ -51,19 +120,28 @@ const FooterBtn = ({ className }: { className?: string }) => {
           </DrawerHeader>
           <div className="no-scrollbar overflow-auto px-4 md:p-8 pb-20 md:pb-0">
             <h3 className="font-bold text-2xl mb-4">
-              Edit <span className="text-muted"> #</span>XM9141
+              Edit <span className="text-muted"> #</span>
+              {invoice.id}
             </h3>
 
-            <EditInvoiceForm />
+            <EditInvoiceForm
+              invoice={invoice}
+              formId={`edit-invoice-form-${invoice.id}`}
+              onSave={handleSaveChanges}
+            />
           </div>
-          <DrawerFooter className="">
+          <DrawerFooter>
             <span className="flex justify-end gap-2 font-bold">
               <DrawerClose asChild>
                 <button className="bg-button-secondary text-muted py-3 px-4 rounded-full">
                   Cancel
                 </button>
               </DrawerClose>
-              <button className="bg-button-primary text-white py-3 px-4 rounded-full">
+              <button
+                type="submit"
+                form={`edit-invoice-form-${invoice.id}`}
+                className="bg-button-primary text-white py-3 px-4 rounded-full"
+              >
                 Save Changes
               </button>
             </span>
@@ -71,20 +149,21 @@ const FooterBtn = ({ className }: { className?: string }) => {
         </DrawerContent>
       </Drawer>
 
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          <button className="px-4 text-[15px] bg-[#EC5757] hover:bg-[#E53E3E] md:py-4 rounded-full cursor-pointer">
-            Delete
-          </button>
-        </DialogTrigger>
+      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <button
+          type="button"
+          onClick={() => setDeleteOpen(true)}
+          className="px-4 text-[15px] bg-[#EC5757] hover:bg-[#FF9797] hover:text-[#FFFFFF] md:py-4 rounded-full cursor-pointer"
+        >
+          Delete
+        </button>
         <DialogContent className="sm:max-w-106">
           <DialogHeader>
             <DialogTitle className="font-bold text-2xl">
               Confirm Deletion
             </DialogTitle>
             <DialogDescription className="text-muted">
-              {`
-             Are you sure you want to delete invoice ${param.id}  This action cannot be undone.`}
+              {`Are you sure you want to delete invoice ${invoice.id}? This action cannot be undone.`}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -94,7 +173,11 @@ const FooterBtn = ({ className }: { className?: string }) => {
                   Cancel
                 </button>
               </DialogClose>
-              <button className="bg-[#EC5757] text-[#F9FAFE] py-3 px-4 rounded-full">
+              <button
+                type="button"
+                onClick={handleDelete}
+                className="bg-[#EC5757] text-[#F9FAFE] py-3 px-4 rounded-full"
+              >
                 Delete
               </button>
             </span>
@@ -103,8 +186,14 @@ const FooterBtn = ({ className }: { className?: string }) => {
       </Dialog>
 
       <button
-        onClick={() => {}}
-        className="px-4 py-2 text-[15px] bg-[#7C5DFA] hover:bg-[#6B46C1] md:py-4 rounded-full cursor-pointer"
+        type="button"
+        onClick={handleMarkAsPaid}
+        disabled={!canMarkAsPaid}
+        className={`px-4 py-2 text-[15px] md:py-4 rounded-full cursor-pointer ${
+          canMarkAsPaid
+            ? "bg-[#7C5DFA] hover:bg-[#9277FF] text-white"
+            : "bg-[#7C5DFA]/40 text-white/70 cursor-not-allowed"
+        }`}
       >
         Mark as Paid
       </button>

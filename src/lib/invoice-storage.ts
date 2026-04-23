@@ -15,20 +15,20 @@ const INVOICES_KEY = "invoices";
 const FULL_INVOICES_KEY = "full-invoices";
 
 const DEFAULT_INVOICES: Invoice[] = [
-  {
-    id: "XM9141",
-    name: "Graphic Design",
-    amount: 556.0,
-    dueDate: "19 Aug 2021",
-    status: "paid",
-  },
-  {
-    id: "RG0314",
-    name: "Website Redesign",
-    amount: 14002.33,
-    dueDate: "20 Sep 2021",
-    status: "pending",
-  },
+  // {
+  //   id: "XM9141",
+  //   name: "Graphic Design",
+  //   amount: 556.0,
+  //   dueDate: "19 Aug 2021",
+  //   status: "paid",
+  // },
+  // {
+  //   id: "RG0314",
+  //   name: "Website Redesign",
+  //   amount: 14002.33,
+  //   dueDate: "20 Sep 2021",
+  //   status: "pending",
+  // },
 ];
 
 const hasWindow = () => typeof window !== "undefined";
@@ -179,8 +179,37 @@ export const deleteInvoice = (invoiceId: string) => {
   saveInvoices(updatedInvoices);
 };
 
+export const deleteFullInvoice = (invoiceId: string) => {
+  const fullInvoices = getFullInvoices();
+  const updatedFullInvoices = fullInvoices.filter(
+    (invoice) => invoice.id !== invoiceId,
+  );
+  saveFullInvoices(updatedFullInvoices);
+};
+
+export const updateInvoiceStatus = (
+  invoiceId: string,
+  status: InvoiceStatus,
+) => {
+  const updatedSimpleInvoice = updateInvoice(invoiceId, { status });
+
+  const fullInvoices = getFullInvoices();
+  const fullIndex = fullInvoices.findIndex(
+    (invoice) => invoice.id === invoiceId,
+  );
+  if (fullIndex !== -1) {
+    fullInvoices[fullIndex] = {
+      ...fullInvoices[fullIndex],
+      status,
+    };
+    saveFullInvoices(fullInvoices);
+  }
+
+  return updatedSimpleInvoice;
+};
+
 export const markInvoiceAsPaid = (invoiceId: string) => {
-  return updateInvoice(invoiceId, { status: "paid" });
+  return updateInvoiceStatus(invoiceId, "paid");
 };
 
 export const getInvoiceById = (invoiceId: string) => {
@@ -191,6 +220,30 @@ export const getInvoiceById = (invoiceId: string) => {
 export const getFullInvoiceById = (invoiceId: string): StoredInvoice | null => {
   const fullInvoices = getFullInvoices();
   return fullInvoices.find((invoice) => invoice.id === invoiceId) || null;
+};
+
+export const saveEditedInvoice = (
+  invoiceId: string,
+  updatedData: Partial<InvoiceFormValues>,
+) => {
+  const updatedFullInvoice = updateFullInvoice(invoiceId, updatedData);
+
+  if (updatedFullInvoice) {
+    return updatedFullInvoice;
+  }
+
+  const currentInvoice = getInvoiceById(invoiceId);
+  if (!currentInvoice) return null;
+
+  const updatedSimpleInvoice = updateInvoice(invoiceId, {
+    name: updatedData.projectDescription ?? currentInvoice.name,
+    amount: updatedData.items
+      ? calculateInvoiceTotal(updatedData.items)
+      : currentInvoice.amount,
+    dueDate: updatedData.invoiceDate ?? currentInvoice.dueDate,
+  });
+
+  return updatedSimpleInvoice;
 };
 
 export const updateFullInvoice = (

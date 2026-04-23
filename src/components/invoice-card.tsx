@@ -22,7 +22,7 @@ const InvoiceCard = ({
         <span className="text-[13px] w-37.5 text-muted">Due {dueDate}</span>
         <span className="text-[13px] w-37.5 text-muted">{name}</span>
 
-        <span className="text-[15px] w-25 font-bold">
+        <span className="text-[15px] w-32 font-bold">
           £{" "}
           {amount.toLocaleString(undefined, {
             minimumFractionDigits: 2,

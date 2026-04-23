@@ -37,9 +37,9 @@ const InvoicePage = () => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [open, setOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [paidInvoices, setPaidInvoices] = useState(false);
-  const [draftInvoices, setDraftInvoices] = useState(false);
-  const [pendingInvoices, setPendingInvoices] = useState(false);
+  const [paidInvoices, setPaidInvoices] = useState(true);
+  const [draftInvoices, setDraftInvoices] = useState(true);
+  const [pendingInvoices, setPendingInvoices] = useState(true);
 
   useEffect(() => {
     setInvoices(getInvoices());
@@ -80,16 +80,19 @@ const InvoicePage = () => {
     if (pendingInvoices) selectedStatuses.push("pending");
     if (paidInvoices) selectedStatuses.push("paid");
 
-    if (selectedStatuses.length === 0) return invoices;
-
     return invoices.filter((invoice) =>
       selectedStatuses.includes(invoice.status),
     );
   }, [draftInvoices, pendingInvoices, paidInvoices, invoices]);
 
   const handleCreate = (values: InvoiceFormValues) => {
-    console.log("created", values);
     createInvoice(values, "pending");
+    setInvoices(getInvoices());
+    setIsCreateOpen(false);
+  };
+
+  const handleCreateDraft = (values: InvoiceFormValues) => {
+    createInvoice(values, "draft");
     setInvoices(getInvoices());
     setIsCreateOpen(false);
   };
@@ -191,7 +194,7 @@ const InvoicePage = () => {
               </button>
             </DrawerTrigger>
 
-            <DrawerContent className="data-[vaul-drawer-direction=left]:w-screen flex md:data-[vaul-drawer-direction=left]:w-[900px]">
+            <DrawerContent className="data-[vaul-drawer-direction=left]:w-screen flex md:data-[vaul-drawer-direction=left]:w-225">
               <DrawerHeader>
                 <DrawerClose asChild>
                   <button className="flex gap-2 items-center my-3 cursor-pointer hover:opacity-80 transition-opacity">
@@ -205,6 +208,7 @@ const InvoicePage = () => {
                 <h3 className="font-bold text-2xl mb-4">New Invoice</h3>
                 <NewInvoiceForm
                   onSave={handleCreate}
+                  onDraft={handleCreateDraft}
                   formId={NEW_INVOICE_FORM_ID}
                 />
               </div>
@@ -216,12 +220,18 @@ const InvoicePage = () => {
                     </button>
                   </DrawerClose>
                   <span className="flex gap-2">
-                    <button className="bg-navbar-primary text-muted py-1.5 px-2.5 rounded-full">
+                    <button
+                      type="submit"
+                      form={NEW_INVOICE_FORM_ID}
+                      value="draft"
+                      className="bg-navbar-primary text-muted py-1.5 px-2.5 rounded-full"
+                    >
                       Save as Draft
                     </button>
                     <button
                       type="submit"
                       form={NEW_INVOICE_FORM_ID}
+                      value="send"
                       className="bg-button-primary text-white py-1.5 px-2.5 rounded-full"
                     >
                       Save & Send
