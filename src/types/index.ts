@@ -23,7 +23,51 @@ export interface Invoice {
 }
 
 export interface InvoiceFormValues {
-  name: string;
-  amount: number;
-  dueDate: string;
+  billFrom: {
+    streetAddress: string;
+    city: string;
+    postCode: string;
+    country: string;
+  };
+  billTo: {
+    name: string;
+    email: string;
+    streetAddress: string;
+    city: string;
+    postCode: string;
+    country: string;
+  };
+  items: {
+    name: string;
+    quantity: number;
+    price: number;
+  }[];
+  invoiceDate: string;
+  paymentTerms: string;
+  projectDescription: string;
+}
+
+export interface updateInvoiceFormValues {
+  billFrom: {
+    streetAddress: string;
+    city: string;
+    postCode: string;
+    country: string;
+  };
+  billTo: {
+    name: string;
+    email: string;
+    streetAddress: string;
+    city: string;
+    postCode: string;
+    country: string;
+  };
+  items: {
+    name: string;
+    quantity: number;
+    price: number;
+  }[];
+  invoiceDate: string;
+  paymentTerms: string;
+  projectDescription: string;
 }

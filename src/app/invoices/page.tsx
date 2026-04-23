@@ -28,6 +28,7 @@ import { BiPlus } from "react-icons/bi";
 import { IoIosArrowBack, IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 
 const FILTERS_KEY = "invoice-filters";
+const NEW_INVOICE_FORM_ID = "new-invoice-form";
 
 const InvoicePage = () => {
   const router = useRouter();
@@ -86,8 +87,9 @@ const InvoicePage = () => {
     );
   }, [draftInvoices, pendingInvoices, paidInvoices, invoices]);
 
-  const handleCreate = (values: InvoiceFormValues, status: InvoiceStatus) => {
-    createInvoice(values, status);
+  const handleCreate = (values: InvoiceFormValues) => {
+    console.log("created", values);
+    createInvoice(values, "pending");
     setInvoices(getInvoices());
     setIsCreateOpen(false);
   };
@@ -201,7 +203,10 @@ const InvoicePage = () => {
 
               <div className="no-scrollbar overflow-auto px-4 pb-20">
                 <h3 className="font-bold text-2xl mb-4">New Invoice</h3>
-                <NewInvoiceForm onSave={handleCreate} />
+                <NewInvoiceForm
+                  onSave={handleCreate}
+                  formId={NEW_INVOICE_FORM_ID}
+                />
               </div>
               <DrawerFooter className="">
                 <span className="flex justify-end md:justify-between gap-2 font-bold">
@@ -214,7 +219,11 @@ const InvoicePage = () => {
                     <button className="bg-navbar-primary text-muted py-1.5 px-2.5 rounded-full">
                       Save as Draft
                     </button>
-                    <button className="bg-button-primary text-white py-1.5 px-2.5 rounded-full">
+                    <button
+                      type="submit"
+                      form={NEW_INVOICE_FORM_ID}
+                      className="bg-button-primary text-white py-1.5 px-2.5 rounded-full"
+                    >
                       Save & Send
                     </button>
                   </span>

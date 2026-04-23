@@ -1,8 +1,18 @@
-import { Invoice } from "@/types";
+import { Invoice, InvoiceFormValues } from "@/types";
 
 export type InvoiceStatus = "paid" | "pending" | "draft";
 
+export interface StoredInvoice extends Invoice {
+  billFrom: InvoiceFormValues["billFrom"];
+  billTo: InvoiceFormValues["billTo"];
+  items: InvoiceFormValues["items"];
+  invoiceDate: string;
+  paymentTerms: string;
+  projectDescription: string;
+}
+
 const INVOICES_KEY = "invoices";
+const FULL_INVOICES_KEY = "full-invoices";
 
 const DEFAULT_INVOICES: Invoice[] = [
   {
@@ -11,20 +21,6 @@ const DEFAULT_INVOICES: Invoice[] = [
     amount: 556.0,
     dueDate: "19 Aug 2021",
     status: "paid",
-  },
-  {
-    id: "RG0314",
-    name: "Website Redesign",
-    amount: 14002.33,
-    dueDate: "20 Sep 2021",
-    status: "pending",
-  },
-  {
-    id: "RG0314",
-    name: "Website Redesign",
-    amount: 14002.33,
-    dueDate: "20 Sep 2021",
-    status: "draft",
   },
   {
     id: "RG0314",
@@ -82,22 +78,70 @@ const generateInvoiceId = () => {
   return `${letters}${numbers}`;
 };
 
-export const createInvoice = (
-  invoice: Omit<Invoice, "id" | "status">,
-  status: InvoiceStatus,
+const calculateInvoiceTotal = (
+  items: { quantity: number; price: number }[],
 ) => {
-  const nextInvoice: Invoice = {
-    id: generateInvoiceId(),
-    name: invoice.name,
-    amount: Number(invoice.amount) || 0,
-    dueDate: formatDisplayDate(invoice.dueDate),
+  return items.reduce((total, item) => total + item.quantity * item.price, 0);
+};
+
+export const getFullInvoices = (): StoredInvoice[] => {
+  if (!hasWindow()) return [];
+
+  const stored = localStorage.getItem(FULL_INVOICES_KEY);
+  if (!stored) {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(stored) as StoredInvoice[];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
+
+export const saveFullInvoices = (invoices: StoredInvoice[]) => {
+  if (!hasWindow()) return;
+  localStorage.setItem(FULL_INVOICES_KEY, JSON.stringify(invoices));
+};
+
+export const createInvoice = (
+  invoiceData: InvoiceFormValues,
+  status: InvoiceStatus = "pending",
+): StoredInvoice => {
+  const id = generateInvoiceId();
+  const amount = calculateInvoiceTotal(invoiceData.items);
+
+  const newInvoice: StoredInvoice = {
+    id,
+    name: invoiceData.projectDescription,
+    amount,
+    dueDate: invoiceData.invoiceDate,
     status,
+    billFrom: invoiceData.billFrom,
+    billTo: invoiceData.billTo,
+    items: invoiceData.items,
+    invoiceDate: invoiceData.invoiceDate,
+    paymentTerms: invoiceData.paymentTerms,
+    projectDescription: invoiceData.projectDescription,
   };
 
-  const invoices = getInvoices();
-  const updatedInvoices = [nextInvoice, ...invoices];
-  saveInvoices(updatedInvoices);
-  return nextInvoice;
+  const fullInvoices = getFullInvoices();
+  const simplifiedInvoices = getInvoices();
+
+  fullInvoices.push(newInvoice);
+  simplifiedInvoices.push({
+    id,
+    name: invoiceData.projectDescription,
+    amount,
+    dueDate: invoiceData.invoiceDate,
+    status,
+  });
+
+  saveFullInvoices(fullInvoices);
+  saveInvoices(simplifiedInvoices);
+
+  return newInvoice;
 };
 
 export const updateInvoice = (
@@ -142,4 +186,57 @@ export const markInvoiceAsPaid = (invoiceId: string) => {
 export const getInvoiceById = (invoiceId: string) => {
   const invoices = getInvoices();
   return invoices.find((invoice) => invoice.id === invoiceId) || null;
+};
+
+export const getFullInvoiceById = (invoiceId: string): StoredInvoice | null => {
+  const fullInvoices = getFullInvoices();
+  return fullInvoices.find((invoice) => invoice.id === invoiceId) || null;
+};
+
+export const updateFullInvoice = (
+  invoiceId: string,
+  updatedData: Partial<InvoiceFormValues>,
+): StoredInvoice | null => {
+  const fullInvoices = getFullInvoices();
+  const invoiceIndex = fullInvoices.findIndex((inv) => inv.id === invoiceId);
+
+  if (invoiceIndex === -1) return null;
+
+  const existingInvoice = fullInvoices[invoiceIndex];
+  const amount = updatedData.items
+    ? calculateInvoiceTotal(updatedData.items)
+    : existingInvoice.amount;
+
+  const updatedInvoice: StoredInvoice = {
+    ...existingInvoice,
+    billFrom: updatedData.billFrom || existingInvoice.billFrom,
+    billTo: updatedData.billTo || existingInvoice.billTo,
+    items: updatedData.items || existingInvoice.items,
+    invoiceDate: updatedData.invoiceDate || existingInvoice.invoiceDate,
+    paymentTerms: updatedData.paymentTerms || existingInvoice.paymentTerms,
+    projectDescription:
+      updatedData.projectDescription || existingInvoice.projectDescription,
+    name: updatedData.projectDescription || existingInvoice.name,
+    dueDate: updatedData.invoiceDate || existingInvoice.dueDate,
+    amount,
+  };
+
+  fullInvoices[invoiceIndex] = updatedInvoice;
+  saveFullInvoices(fullInvoices);
+
+  // Also update the simplified list
+  const invoices = getInvoices();
+  const simpleIndex = invoices.findIndex((inv) => inv.id === invoiceId);
+  if (simpleIndex !== -1) {
+    invoices[simpleIndex] = {
+      id: updatedInvoice.id,
+      name: updatedInvoice.name,
+      amount: updatedInvoice.amount,
+      dueDate: updatedInvoice.dueDate,
+      status: updatedInvoice.status,
+    };
+    saveInvoices(invoices);
+  }
+
+  return updatedInvoice;
 };
