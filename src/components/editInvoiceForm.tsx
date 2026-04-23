@@ -467,9 +467,9 @@ const EditInvoiceForm = ({ invoice, formId, onSave }: EditInvoiceFormProps) => {
                       Number(event.target.value),
                     )
                   }
-                  className={inputClass(
+                  className={`w-[50px] ${inputClass(
                     showFieldErrors && !item.quantity.toString().trim(),
-                  )}
+                  )}`}
                 />
               </span>
               <span className="flex flex-1 flex-col gap-2">
@@ -489,9 +489,9 @@ const EditInvoiceForm = ({ invoice, formId, onSave }: EditInvoiceFormProps) => {
                   onChange={(event) =>
                     handleItemChange(index, "price", Number(event.target.value))
                   }
-                  className={inputClass(
+                  className={`w-[100px] ${inputClass(
                     showFieldErrors && !item.price.toString().trim(),
-                  )}
+                  )}`}
                 />
               </span>
               <span className="flex flex-col gap-2">

@@ -451,11 +451,11 @@ const NewInvoiceForm = ({ onSave, onDraft, formId }: NewInvoiceFormProps) => {
                   onChange={(e) =>
                     handleItemChange(index, "price", Number(e.target.value))
                   }
-                  className={inputClass(
+                  className={`w-[100px] ${inputClass(
                     showFieldErrors &&
                       ((!hasAnyCompleteItem && index === 0) ||
                         (itemHasPartialValue(item) && item.price <= 0)),
-                  )}
+                  )}`}
                 />
               </span>
               <span className="flex flex-col gap-2">
