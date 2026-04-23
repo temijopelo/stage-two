@@ -30,7 +30,7 @@ const Sidebar = () => {
     <nav className="min-h-screen w-18 flex flex-col justify-between items-center bg-navbar-primary z-50 rounded-r-3xl ">
       <Image
         loading="eager"
-        src={"/logo.svg"}
+        src={"logo.svg"}
         alt="Logo"
         width={72}
         height={72}
@@ -48,7 +48,7 @@ const Sidebar = () => {
 
         <div className="p-5 ">
           <Image
-            src={"/user_avatar.png"}
+            src={"user_avatar.png"}
             alt="Avatar"
             width={32}
             height={32}

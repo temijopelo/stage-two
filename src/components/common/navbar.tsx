@@ -31,7 +31,7 @@ const Navbar = () => {
       <span className="flex-1 flex items-center justify-between gap-4 pr-5">
         <Image
           loading="eager"
-          src={"/logo.svg"}
+          src={"logo.svg"}
           alt="Logo"
           width={72}
           height={72}
@@ -48,7 +48,7 @@ const Navbar = () => {
       <hr className="border-[.5px] border-border/35 h-17.5" />
       <div className="px-5 ">
         <Image
-          src={"/user_avatar.png"}
+          src={"user_avatar.png"}
           alt="Avatar"
           width={32}
           height={32}
