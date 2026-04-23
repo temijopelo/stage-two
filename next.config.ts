@@ -1,10 +1,12 @@
 import type { NextConfig } from "next";
 
+const isGithubPagesBuild = process.env.GITHUB_ACTIONS === "true";
+
 const nextConfig: NextConfig = {
   output: "export",
   trailingSlash: true,
-  basePath: "/stage-two",
-  assetPrefix: "/stage-two",
+  basePath: isGithubPagesBuild ? "/stage-two" : "",
+  assetPrefix: isGithubPagesBuild ? "/stage-two" : "",
   images: {
     unoptimized: true,
   },
