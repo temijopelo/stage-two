@@ -2,7 +2,14 @@
 import React, { useState } from "react";
 import { IoMdTrash } from "react-icons/io";
 
-const NewInvoiceForm = () => {
+interface NewInvoiceFormProps {
+  onSave?: (
+    values: { name: string; amount: number; dueDate: string },
+    status: "paid" | "pending" | "draft",
+  ) => void;
+}
+
+const NewInvoiceForm = (_props: NewInvoiceFormProps) => {
   const [items, setItems] = useState([
     { name: "", quantity: 0, price: 0, total: 0 },
   ]);
@@ -32,8 +39,8 @@ const NewInvoiceForm = () => {
             className="border-[#DFE3FA] border p-3 rounded-md font-bold text-[15px]"
           />
         </span>
-        <span className="flex justify-between gap-1.5">
-          <span className="w-1/2 flex flex-col gap-2">
+        <span className="flex gap-1 md:gap-3 flex-row flex-wrap">
+          <span className="w-35 flex-1 flex flex-col gap-2">
             <label className="text-muted text-[13px]" htmlFor="city">
               City
             </label>
@@ -42,7 +49,7 @@ const NewInvoiceForm = () => {
               className="border-[#DFE3FA] border p-3 rounded-md font-bold text-[15px]"
             />
           </span>
-          <span className="w-1/2 flex flex-col gap-2">
+          <span className="w-35 flex-1 flex flex-col gap-2">
             <label className="text-muted text-[13px]" htmlFor="postcode">
               Post Code
             </label>
@@ -51,15 +58,15 @@ const NewInvoiceForm = () => {
               className="border-[#DFE3FA] border p-3 rounded-md font-bold text-[15px]"
             />
           </span>
-        </span>
-        <span className="w-full flex flex-col gap-2">
-          <label className="text-muted text-[13px]" htmlFor="country">
-            Country
-          </label>
-          <input
-            type="text"
-            className="border-[#DFE3FA] border p-3 rounded-md font-bold text-[15px]"
-          />
+          <span className="w-full flex-2 md:flex-1 flex flex-col gap-2">
+            <label className="text-muted text-[13px]" htmlFor="country">
+              Country
+            </label>
+            <input
+              type="text"
+              className="border-[#DFE3FA] border p-3 rounded-md font-bold text-[15px]"
+            />
+          </span>
         </span>
 
         <h6 className="text-[#7C5DFA] font-bold my-3">Bill To</h6>
@@ -91,9 +98,9 @@ const NewInvoiceForm = () => {
             className="border-[#DFE3FA] border p-3 rounded-md font-bold text-[15px]"
           />
         </span>
-        <span className="flex justify-between gap-1.5">
-          <span className="w-1/2 flex flex-col gap-2">
-            <label className="text-muted text-[13px]" htmlFor="city">
+        <span className="flex gap-1 md:gap-3 flex-row flex-wrap">
+          <span className="w-35 flex-1 flex flex-col gap-2">
+            <label className="text-muted text-[13px]" htmlFor="billtocity">
               City
             </label>
             <input
@@ -101,8 +108,8 @@ const NewInvoiceForm = () => {
               className="border-[#DFE3FA] border p-3 rounded-md font-bold text-[15px]"
             />
           </span>
-          <span className="w-1/2 flex flex-col gap-2">
-            <label className="text-muted text-[13px]" htmlFor="postcode">
+          <span className="w-35 flex-1 flex flex-col gap-2">
+            <label className="text-muted text-[13px]" htmlFor="billtopostcode">
               Post Code
             </label>
             <input
@@ -110,35 +117,37 @@ const NewInvoiceForm = () => {
               className="border-[#DFE3FA] border p-3 rounded-md font-bold text-[15px]"
             />
           </span>
+          <span className="w-full flex-2 md:flex-1 flex flex-col gap-2">
+            <label className="text-muted text-[13px]" htmlFor="billtocountry">
+              Country
+            </label>
+            <input
+              type="text"
+              className="border-[#DFE3FA] border p-3 rounded-md font-bold text-[15px]"
+            />
+          </span>
         </span>
-        <span className=" flex flex-col gap-2">
-          <label className="text-muted text-[13px]" htmlFor="country">
-            Country
-          </label>
-          <input
-            type="text"
-            className="border-[#DFE3FA] border p-3 rounded-md font-bold text-[15px]"
-          />
-        </span>
-        <span className=" flex flex-col gap-2">
-          <label className="text-muted text-[13px]" htmlFor="invoicedate">
-            Invoice Date
-          </label>
-          <input
-            type="date"
-            className="border-[#DFE3FA] border p-3 rounded-md font-bold text-[15px]"
-          />
-        </span>
-        <span className=" flex flex-col gap-2">
-          <label className="text-muted text-[13px]" htmlFor="paymentterms">
-            Payment Terms
-          </label>
-          <select className="border-[#DFE3FA] border p-3 rounded-md font-bold text-[15px]">
-            <option value="1">Net 1 Day</option>
-            <option value="7">Net 7 Days</option>
-            <option value="14">Net 14 Days</option>
-            <option value="30">Net 30 Days</option>
-          </select>
+        <span className="flex flex-col md:flex-row gap-2">
+          <span className=" flex-1 flex flex-col gap-2">
+            <label className="text-muted text-[13px]" htmlFor="invoicedate">
+              Invoice Date
+            </label>
+            <input
+              type="date"
+              className="border-[#DFE3FA] border p-3 rounded-md font-bold text-[15px]"
+            />
+          </span>
+          <span className=" flex-1 flex flex-col gap-2">
+            <label className="text-muted text-[13px]" htmlFor="paymentterms">
+              Payment Terms
+            </label>
+            <select className="border-[#DFE3FA] border p-3.5 rounded-md font-bold text-[15px]">
+              <option value="1">Net 1 Day</option>
+              <option value="7">Net 7 Days</option>
+              <option value="14">Net 14 Days</option>
+              <option value="30">Net 30 Days</option>
+            </select>
+          </span>
         </span>
         <span className=" flex flex-col gap-2">
           <label
@@ -156,8 +165,8 @@ const NewInvoiceForm = () => {
         <h6 className="text-[#777F98] font-bold my-3">Item List</h6>
 
         {items.map((item, index) => (
-          <span key={index} className="flex flex-col gap-4">
-            <span className="flex flex-col gap-2">
+          <span key={index} className="flex flex-col md:flex-row  gap-4">
+            <span className="flex flex-1 flex-col gap-2">
               <label className="text-muted text-[13px]" htmlFor="itemname">
                 Item Name
               </label>
@@ -166,8 +175,8 @@ const NewInvoiceForm = () => {
                 className="border-[#DFE3FA] border p-3 rounded-md font-bold text-[15px]"
               />
             </span>
-            <span className="flex items-center justify-between">
-              <span className="flex flex-col">
+            <span className="flex items-center justify-between gap-2 md:gap-4">
+              <span className="flex flex-1 flex-col gap-2">
                 <label
                   className="text-muted text-[13px]"
                   htmlFor="itemquantity"
@@ -176,25 +185,25 @@ const NewInvoiceForm = () => {
                 </label>
                 <input
                   type="number"
-                  className="border-[#DFE3FA] w-[70px] border p-3 rounded-md font-bold text-[15px]"
+                  className="border-[#DFE3FA] w-14 border p-3 rounded-md font-bold text-[15px]"
                 />
               </span>
-              <span className="flex flex-col">
+              <span className="flex flex-1 flex-col gap-2">
                 <label className="text-muted text-[13px]" htmlFor="itemprice">
                   Price
                 </label>
                 <input
                   type="number"
-                  className="border-[#DFE3FA]  w-[100px] border p-3 rounded-md font-bold text-[15px]"
+                  className="border-[#DFE3FA] border p-3 rounded-md font-bold text-[15px]"
                 />
               </span>
-              <span className="flex flex-col">
+              <span className="flex flex-col gap-2">
                 <label className="text-muted text-[13px]" htmlFor="itemtotal">
                   Total
                 </label>
                 <input
                   type="text"
-                  className="border-[#DFE3FA]  w-[100px] p-3 rounded-md font-bold text-[15px] text-[#888EB0]"
+                  className="border-[#DFE3FA] w-[100px]  p-3 rounded-md font-bold text-[15px] text-[#888EB0]"
                 />
               </span>
               <span>
@@ -211,7 +220,7 @@ const NewInvoiceForm = () => {
 
         <button
           onClick={handleAdditems}
-          className="bg-[#F9FAFE] py-3 rounded-full text-[#7E88C3] font-bold"
+          className="bg-[#F9FAFE] dark:bg-[#252945] dark:text-white py-3 rounded-full text-[#7E88C3] font-bold"
         >
           + Add New Item
         </button>

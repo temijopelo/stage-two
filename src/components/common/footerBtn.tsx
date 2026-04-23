@@ -25,21 +25,22 @@ import { useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import EditInvoiceForm from "../editInvoiceForm";
 
-const FooterBtn = () => {
+const FooterBtn = ({ className }: { className?: string }) => {
   const router = useRouter();
   const param = useParams();
   const [open, setOpen] = useState(false);
 
-  console.log(param, "params");
   return (
-    <div className="flex justify-evenly bg-card p-4 font-bold text-white">
+    <div
+      className={`flex justify-evenly bg-card p-4 font-bold text-white ${className}`}
+    >
       <Drawer direction={"left"}>
         <DrawerTrigger asChild>
-          <button className="px-6 bg-button-secondary hover:opacity-85 text-button-secondary-foreground py-4 rounded-full cursor-pointer transition-opacity">
+          <button className="px-4 text-[15px] md:px-6 bg-button-secondary hover:opacity-85 text-button-secondary-foreground md:py-4 rounded-full cursor-pointer transition-opacity">
             Edit
           </button>
         </DrawerTrigger>
-        <DrawerContent className="data-[vaul-drawer-direction=left]:w-screen flex md:data-[vaul-drawer-direction=left]:w-[900px]">
+        <DrawerContent className="data-[vaul-drawer-direction=left]:w-screen">
           <DrawerHeader>
             <DrawerClose asChild>
               <button className="flex gap-2 items-center my-3 cursor-pointer">
@@ -48,7 +49,7 @@ const FooterBtn = () => {
               </button>
             </DrawerClose>
           </DrawerHeader>
-          <div className="no-scrollbar overflow-auto px-4 pb-20">
+          <div className="no-scrollbar overflow-auto px-4 md:p-8 pb-20 md:pb-0">
             <h3 className="font-bold text-2xl mb-4">
               Edit <span className="text-muted"> #</span>XM9141
             </h3>
@@ -58,11 +59,11 @@ const FooterBtn = () => {
           <DrawerFooter className="">
             <span className="flex justify-end gap-2 font-bold">
               <DrawerClose asChild>
-                <button className="bg-button-secondary text-button-secondary-foreground py-3 px-4 rounded-full">
+                <button className="bg-button-secondary text-muted py-3 px-4 rounded-full">
                   Cancel
                 </button>
               </DrawerClose>
-              <button className="bg-button-primary text-button-primary-foreground py-3 px-4 rounded-full">
+              <button className="bg-button-primary text-white py-3 px-4 rounded-full">
                 Save Changes
               </button>
             </span>
@@ -72,7 +73,7 @@ const FooterBtn = () => {
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <button className="px-4 bg-[#EC5757] hover:bg-[#E53E3E] py-4 rounded-full cursor-pointer">
+          <button className="px-4 text-[15px] bg-[#EC5757] hover:bg-[#E53E3E] md:py-4 rounded-full cursor-pointer">
             Delete
           </button>
         </DialogTrigger>
@@ -87,7 +88,7 @@ const FooterBtn = () => {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <span className="flex justify-end font-bold">
+            <span className="flex justify-end gap-3 font-bold">
               <DialogClose asChild>
                 <button className="bg-button-secondary text-button-secondary-foreground py-3 px-4 rounded-full">
                   Cancel
@@ -103,7 +104,7 @@ const FooterBtn = () => {
 
       <button
         onClick={() => {}}
-        className="px-4 bg-[#7C5DFA] hover:bg-[#6B46C1] py-4 rounded-full cursor-pointer"
+        className="px-4 py-2 text-[15px] bg-[#7C5DFA] hover:bg-[#6B46C1] md:py-4 rounded-full cursor-pointer"
       >
         Mark as Paid
       </button>

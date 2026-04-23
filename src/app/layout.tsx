@@ -1,8 +1,8 @@
+// app/layout.tsx
 import type { Metadata } from "next";
 import { League_Spartan } from "next/font/google";
 import "./globals.css";
-import { cn } from "@/lib/utils";
-import Navbar from "@/components/common/navbar";
+import AppLayout from "@/components/layout/appLayout";
 
 const leagueSpartan = League_Spartan({
   variable: "--font-league-spartan",
@@ -34,13 +34,7 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body
-        suppressHydrationWarning
-        className={cn("h-screen", "font-league-spartan", "bg-background")}
-      >
-        <Navbar />
-        <main className="pt-18">{children}</main>
-      </body>
+      <AppLayout>{children}</AppLayout>
     </html>
   );
 }
