@@ -427,7 +427,7 @@ const NewInvoiceForm = ({ onSave, onDraft, formId }: NewInvoiceFormProps) => {
                   onChange={(e) =>
                     handleItemChange(index, "quantity", Number(e.target.value))
                   }
-                  className={`w-14 ${inputClass(
+                  className={`w-[50px] ${inputClass(
                     showFieldErrors &&
                       ((!hasAnyCompleteItem && index === 0) ||
                         (itemHasPartialValue(item) && item.quantity <= 0)),

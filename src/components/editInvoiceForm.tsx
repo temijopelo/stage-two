@@ -506,7 +506,7 @@ const EditInvoiceForm = ({ invoice, formId, onSave }: EditInvoiceFormProps) => {
                   type="text"
                   readOnly
                   value={`£ ${(Number(item.quantity) * Number(item.price)).toFixed(2)}`}
-                  className="border-[#DFE3FA] w-25 p-3 rounded-md font-bold text-[15px] text-[#888EB0]"
+                  className="border-[#DFE3FA] w-[100px] p-3 rounded-md font-bold text-[15px] text-[#888EB0]"
                 />
               </span>
               <span>
