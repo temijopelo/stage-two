@@ -1,5 +1,6 @@
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { InvoiceCardProps } from "@/types";
+import moment from "moment";
 import { GoDotFill } from "react-icons/go";
 import { IoIosArrowForward } from "react-icons/io";
 
@@ -19,7 +20,9 @@ const InvoiceCard = ({
         <span className="text-muted w-18.75 font-bold text-[15px]">
           #<span className="text-foreground">{id}</span>
         </span>
-        <span className="text-[13px] w-37.5 text-muted">Due {dueDate}</span>
+        <span className="text-[13px] w-37.5 text-muted">
+          Due {moment(dueDate).format("DD MMM YYYY")}
+        </span>
         <span className="text-[13px] w-37.5 text-muted">{name}</span>
 
         <span className="text-[15px] w-32 font-bold">
@@ -70,7 +73,9 @@ const InvoiceCard = ({
       </span>
       <span className="flex items-center justify-between mt-4">
         <span className=" flex flex-col gap-2">
-          <p className="text-[13px] text-muted">Due {dueDate}</p>
+          <p className="text-[13px] text-muted">
+            Due {moment(dueDate).format("DD MMM YYYY")}
+          </p>
           <p className="text-[15px] font-bold">
             £{" "}
             {amount.toLocaleString(undefined, {
